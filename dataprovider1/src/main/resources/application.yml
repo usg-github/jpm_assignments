@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile:
+      - prod
+
+server:
+  port: 5050
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+      - dev
+      - sit
+      - uat
+
+server:
+  port: 5050

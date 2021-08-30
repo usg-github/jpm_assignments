@@ -1,0 +1,77 @@
+spring:
+  config:
+    activate:
+      on-profile:
+      - prod
+
+server:
+  port: 4040
+
+intw:
+ jpm:
+  service:
+    dataproviders:
+      provider1:
+        base-uri: http://localhost:5050
+        connection-timeout: 30000
+      provider2:
+        base-uri: http://localhost:6060
+        connection-timeout: 30000
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+      - dev
+      - sit
+      - uat
+
+server:
+  port: 4040
+
+intw:
+ jpm:
+  service:
+    dataproviders:
+      provider1:
+        base-uri: http://localhost:5050
+        connection-timeout: 30000
+      provider2:
+        base-uri: http://localhost:6060
+        connection-timeout: 30000
+
+---
+resilience4j.circuitbreaker:
+   instances:
+       provider1:
+           registerHealthIndicator: true
+           slidingWindowSize: 100
+       provider2:
+           registerHealthIndicator: true
+           slidingWindowSize: 100
+     
+resilience4j.retry:
+   instances:
+       provider1:
+           maxRetryAttempts: 3
+           waitDuration: 10s
+           retryExceptions:
+               - org.springframework.web.client.HttpServerErrorException
+               - java.io.IOException
+       provider2:
+           maxRetryAttempts: 3
+           waitDuration: 10s
+           retryExceptions:
+               - org.springframework.web.client.HttpServerErrorException
+               - java.io.IOException
+
+
+resilience4j.timelimiter:
+    instances:
+        provider1:
+            timeoutDuration: 30s
+            cancelRunningFuture: true
+        provider2:
+            timeoutDuration: 30s
+            cancelRunningFuture: true
